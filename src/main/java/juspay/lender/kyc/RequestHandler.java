@@ -99,9 +99,9 @@ public class RequestHandler {
 
 
 
-    @PostMapping("/{host}/{loanApplicationId}/{sessionId}")
-    public ResponseEntity<?> submit(@PathVariable("host") String bankHost,@PathVariable("loanApplicationId") String loanAppid, @PathVariable("sessionId") String sessionId, @RequestParam("okyc") MultipartFile okyc, @RequestParam("udyam") MultipartFile udyam, @RequestParam("okycShareCode") String okySchareCode) {
-        System.out.println("Host: "+ bankHost);
+    @PostMapping("/{loanApplicationId}/{sessionId}")
+    public ResponseEntity<?> submit(@PathVariable("loanApplicationId") String loanAppid, @PathVariable("sessionId") String sessionId, @RequestParam("okyc") MultipartFile okyc, @RequestParam("udyam") MultipartFile udyam, @RequestParam("okycShareCode") String okySchareCode) {
+        
         System.out.println("Loan Application Id: " + loanAppid);
         System.out.println("Session Id: "+ sessionId);
         try {
