@@ -4,17 +4,17 @@ package juspay.lender.kyc;
 import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
 import net.lingala.zip4j.io.inputstream.ZipInputStream;
 import net.lingala.zip4j.model.LocalFileHeader;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
-import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.dsig.XMLSignature;
-import javax.xml.crypto.dsig.XMLSignatureException;
 import javax.xml.crypto.dsig.XMLSignatureFactory;
 import javax.xml.crypto.dsig.dom.DOMValidateContext;
 import javax.xml.parsers.DocumentBuilder;
@@ -22,7 +22,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.security.PublicKey;
-import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
@@ -103,7 +102,7 @@ public class RequestHandler {
 
 
     @PostMapping("/")
-    public void submit(@RequestParam("okyc") MultipartFile okyc, @RequestParam("udyam") MultipartFile udyam, @RequestParam("okycShareCode") String okySchareCode) {
+    public ResponseEntity<?> submit(@RequestParam("okyc") MultipartFile okyc, @RequestParam("udyam") MultipartFile udyam, @RequestParam("okycShareCode") String okySchareCode) {
 
         try {
             // XML is Extracted
@@ -121,6 +120,7 @@ public class RequestHandler {
                 OfflinePaperLessKycData data = readXML(xmlData.toString());
             }else{
                 System.out.println("Zip File does not contain anything");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Zip File Error");
             }
 
             // udyam is Extracted
@@ -134,14 +134,18 @@ public class RequestHandler {
                 while((bytesRead = udyamZipStream.read(buffer))!=-1){
                     outStream.write(buffer,0,bytesRead);
                 }
+                return ResponseEntity.ok("Accepted");
             }else{
                 System.out.println("Zip File does not contain anything");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Zip File Error");
             }
 
         } catch ( IOException e) {
             e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("");
         } catch (SAXException | ParserConfigurationException e){
             System.out.println("Wrong Password");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Wrong Password for Zip");
         }
     }
 
