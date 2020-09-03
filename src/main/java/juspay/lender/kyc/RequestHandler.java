@@ -6,14 +6,12 @@ import net.lingala.zip4j.io.inputstream.ZipInputStream;
 import net.lingala.zip4j.model.LocalFileHeader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
+import javax.websocket.server.PathParam;
 import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.crypto.dsig.XMLSignatureFactory;
 import javax.xml.crypto.dsig.dom.DOMValidateContext;
@@ -101,9 +99,10 @@ public class RequestHandler {
 
 
 
-    @PostMapping("/")
-    public ResponseEntity<?> submit(@RequestParam("okyc") MultipartFile okyc, @RequestParam("udyam") MultipartFile udyam, @RequestParam("okycShareCode") String okySchareCode) {
-
+    @PostMapping("/bankABC/{loanApplicationId}/{sessionId}")
+    public ResponseEntity<?> submit(@PathVariable("loanApplicationId") String loanAppid, @PathVariable("sessionId") String sessionId, @RequestParam("okyc") MultipartFile okyc, @RequestParam("udyam") MultipartFile udyam, @RequestParam("okycShareCode") String okySchareCode) {
+        System.out.println("Loan Application Id: " + loanAppid);
+        System.out.println("Session Id: "+ sessionId);
         try {
             // XML is Extracted
             ZipInputStream okycZipStream = new ZipInputStream(okyc.getInputStream(), okySchareCode.toCharArray());
